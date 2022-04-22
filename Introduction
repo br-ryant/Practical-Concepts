@@ -1,0 +1,4 @@
+ssh bnguye43@bfx3.aap.jhu.edu 
+#above was to sign on to jhu server
+mysql -u bnguye43 -h localhost -p
+#above was to connect to sql database
