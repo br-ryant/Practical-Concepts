@@ -41,6 +41,13 @@ length = len(dna)
 codon = dna[0:3]
 print("The length of your sequence is: {0}\nThe first codon is: {1}".format(length, codon))
 
+#Better way to do above code
+
+#!/usr/bin/env python3
+dna = 'ATGGAACCAACGTCAGTGACTTCGTCAG'
+print("The length of your sequence is {0}".format(len(dna)))
+print("The first codon is: {0}".format(dna[0:3]))
+
 
 #5	Starting with the same dna variable assignment above, write another script to perform calculations whose output would be: There are 2 instances of the motif 'AA' You should be able to change the motif and it automatically count how many times it is found in your sequence. 
 
