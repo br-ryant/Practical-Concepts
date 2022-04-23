@@ -1,0 +1,52 @@
+#1	Write a program that computes the circumference of a circle with a radius of 7.5 and prints out the result. The circumference is 2 * pi * radius. You can use the value of 3.14159 for pi. 1.	Write a program that computes the circumference of a circle with a radius of 7.5 and prints out the result. The circumference is 2 * pi * radius. You can use the value of 3.14159 for pi.
+
+#!/usr/bin/env python3
+radius = 7.5
+pi = 3.14159
+circumference = 2 * pi * radius
+print (circumference)
+
+
+#2 Write a program that multiplies two hard-coded numbers, then prints the individual numbers out and prints their product out, all on separate lines. You can choose the two numbers that are multiplied together. 
+
+#!/usr/bin/env python3
+num1 = 6
+print('number 1 is', num1)
+num2 = 8
+print('number 2 is', num2)
+product = num1 * num2
+print ('product is', product)
+
+
+#3	Make a copy of 2 but modify it to print output exactly like this, rather than just the numbers on separate lines: 
+10 x 7 = 70
+
+#!/usr/bin/env python3
+num1 = 10
+num2 = 7
+product = num1 * num2
+print ("{0} x {1} = {2}".format(num1,num2,product))
+
+
+#4	Start a script with the following line:
+dna = 'ATGGAACCAACGTCAGTGACTTCGTCAG' 
+Then write a program to generate the following output: 
+The length of your sequence is: 28 
+The first codon is: ATG 
+You should not print these values (hard-coded) directly. Instead, they should be calculated based on the sequence stored within the dna variable. (That is, if you change the sequence in dna the program should still work accordingly.)
+
+#!/usr/bin/env python3
+dna = 'ATGGAACCAACGTCAGTGACTTCGTCAG'
+length = len(dna)
+codon = dna[0:3]
+print("The length of your sequence is: {0}\nThe first codon is: {1}".format(length, codon))
+
+
+#5	Starting with the same dna variable assignment above, write another script to perform calculations whose output would be: There are 2 instances of the motif 'AA' You should be able to change the motif and it automatically count how many times it is found in your sequence. 
+
+#!/usr/bin/env python3
+dna = 'ATGGAACCAACGTCAGTGACTTCGTCAG'
+motif = 'AA'
+count = dna.count(motif)
+print("There are {0} instances of the motif '{1}'".format(count, motif))
+
