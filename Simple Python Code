@@ -1,3 +1,11 @@
+import sys
+
+for line in sys.stdin:
+    square = int(line) ** 2
+    print (square)
+
+
+
 #1	Write a program that computes the circumference of a circle with a radius of 7.5 and prints out the result. The circumference is 2 * pi * radius. You can use the value of 3.14159 for pi. 1.	Write a program that computes the circumference of a circle with a radius of 7.5 and prints out the result. The circumference is 2 * pi * radius. You can use the value of 3.14159 for pi.
 
 #!/usr/bin/env python3
