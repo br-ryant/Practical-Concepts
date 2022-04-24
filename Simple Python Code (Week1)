@@ -57,3 +57,165 @@ motif = 'AA'
 count = dna.count(motif)
 print("There are {0} instances of the motif '{1}'".format(count, motif))
 
+
+#6 Write a program that prints all the numbers from 1 to 100, inclusive, each on its own line.
+
+#!/usr/bin/env python3
+counter = 1
+while counter <= 100:
+    print (counter , end="\n")
+    counter += 1
+
+#prof
+for num in range(1,101):
+    print(num)
+
+
+#7 Start a script with the following line: counts = '8,3,6,2,12,5'
+Transform this comma-separated string into a list using the split() function. The program should take each element of that list in turn and divide it into 48 (i.e. 48/element) and print the result of the division, like this:
+48 / 8 = 6.0
+
+#!/usr/bin/env python3
+counts = '8,3,6,2,12,5'
+input = counts.split(",")
+for num in input:
+    print('48 /',num,'=', 48 / float(num))
+    
+#prof- difference is int or float, generally int is to convert string to integer whereas float is to decimal, kinda used interchangbly here
+counts = '8,3,6,2,12,5'
+numbers = counts.split(',')
+
+for num in numbers:
+    print("48 / {0} = {1}".format(num, 48/int(num)))
+
+
+#8 Write a function called start_codon which accepts a DNA sequence as its argument and returns the first codon as a string. Assume the sequence is in frame.
+
+#!/usr/bin/env python3
+def start_codon(dna):
+    codon = dna[0:3]
+    return str(codon)
+print (start_codon("ATGGAACCAACGTCAGTGACTTCGTCAG"))
+
+#prof- if name = main makes sure that this is run in the original file, if this were imported this code would not be executed unless it was before the def(main) function.
+
+def main():
+    dna = 'ATGCCCGATTTTCAGACCTATAG'
+    print("The start codon is: {0}".format(start_codon(dna)) )
+
+def start_codon(seq):
+    return seq[0:3]
+
+if __name__ == '__main__':
+    main()
+
+
+#9 In my home area you'll find the following file '/home/jorvis1/e_coli_k12_dh10b.faa', which is in FASTA format. Write a script to count the number of sequence entries within this file and report the count like: 
+There were 4126 sequences within the file.
+
+#!/usr/bin/env python3
+count = 0
+fastafile = open('/home/jorvis1/e_coli_k12_dh10b.faa')
+for line in fastafile:
+    if line.startswith(">"):
+        count += 1
+print("There were {} sequences within the file.".format(count))
+
+#prof- again prof just added main fucntion which is important
+def main():
+    record_count = 0
+    
+    for line in open('/home/jorvis1/e_coli_k12_dh10b.faa'):
+        if line.startswith('>'):
+            record_count += 1
+
+    print("There were {0} sequences within the file.".format(record_count))
+
+if __name__ == '__main__':
+    main()
+
+
+#10 Make a copy of your solution from #4 and instead write a function called fasta_sequence_count which does this functionality. It should accept a file name as an argument and return the number of sequence entries found within it.
+
+#!/usr/bin/env python3
+def fasta_sequence_count(fastafile):
+    count = 0
+    for line in open(fastafile):
+        if line.startswith(">"):
+            count += 1
+    return count
+print(fasta_sequence_count('/home/jorvis1/e_coli_k12_dh10b.faa'))
+
+#prof
+def main():
+    seq_count = fasta_sequence_count('/home/jorvis1/e_coli_k12_dh10b.faa')
+    print("There were {0} sequences within the file.".format(seq_count))
+
+def fasta_sequence_count(file):
+    record_count = 0
+    
+    for line in open(file):
+        if line.startswith('>'):
+            record_count += 1
+
+    return record_count
+    
+if __name__ == '__main__':
+    main()
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
