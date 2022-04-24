@@ -3,16 +3,1238 @@
 tvan5    pts/7        2022-04-23 20:02 (10.249.71.81)
 bnguye43 pts/10       2022-04-23 20:16 (10.249.2.168)
 
+#!/usr/bin/env python3
+
+import re
+
+with open("users.txt") as imp:
+    for line in imp:
+        (who, where, ip) = re.split('\s+', line, 2)
+        print(who + " on " + where + " at " + ip)
+        
+#prof- mine is short and to the point but not sure about the second argument in split   
+import re
+
+def main():
+    for line in open('users.txt'):
+        # split() without arguments splits on whitespace
+        fields = line.split()
+
+        # Some terminals don't report the last field for local users,
+        # so I'll add it here.
+        if len(fields) == 4:
+            fields.append('')
+
+        who = fields[0]
+        where = fields[1]
+        when_and_IP = "{0} {1} {2}".format(fields[2], fields[3], fields[4]);
+
+        print("{0} on {1} at {2}".format(who, where, when_and_IP) )
+
+if __name__ == '__main__':
+    main()
+    
+    
+#3 Write a program that loops through lines of a file, assuming each line of input will consist of just a single word (and a newline, of course). As it loops through each line, your program should print out any words that contain two vowels next to each other. The vowels do not have to be the same. You should create a test input file and make your script process it.
+
+#!/usr/bin/env python3
+
+import re
+
+with open("ex03test.txt") as imp:
+    for line in imp:
+      if re.findall(r'[aeiouAEIOU]{2}', line):
+        print (line)
+        
+#prof- re.I ignores captitalization so not need to put captital letters
+import re
+
+def main():
+    for line in open('ex03test.txt'):
+        line = line.rstrip()
+        m = re.search(r"([aeiou]{2})", line, re.I)
+        if m:
+            print("Successful match to: {0} in {1}".format(m.group(1), line) )
+
+if __name__ == '__main__':
+    main()
+
+#4 Write a program that takes a sentence with two adjectives describing an animal and reverses the adjectives, using regular expressions, and then outputs the new sentence. The sentence that it must read in should be of the following format, where the two adjectives are separated by a comma and a space:
+
+The quick, brown fox jumped over some other non-descript animal. 
+
+If that previous sentence was the input, then the program output should look like: 
+
+The brown, quick fox jumped over some other non-descript animal. 
+
+Note that everything is identical between the two sentences except for the adjectives switching places. You may make up your own sentence, as long as the adjectives are formatted as in this example. Remember, don't make your regular expression match this exact sentence – it should work with any other input sentence with comma separated words like this.
+
+#!/usr/bin/env python3
+
+import re
+
+imp = "The little, shy fox jumped over the scary, brown bear."
+sentence = re.sub(r'\s([a-zA-Z]*),\s([a-zA-Z]*)\s',r' \2, \1 ',imp)
+print(sentence)
+
+#prof - prof only can do one seperation whereas mine can do multiple commas
+import re
+
+def main():
+    sentence = 'The quick, brown fox jumped over some other non-descript animal.'
+
+    m = re.match(r"(.+?)(\S+), (\S+)(.+)", sentence)
+    if m:
+        print("{0}{2}, {1}{3}".format(m.group(1), m.group(2), m.group(3), m.group(4)))
+    else:
+        print("ERROR: sentence didn't match expected pattern.")
+
+if __name__ == '__main__':
+    main()
 
 
+#5 In my home area you'll find a file named 'e_coli_k12_dh10b.faa'. It contains all of the polypeptide sequences in the E. coli K12 genome in FASTA format. Your task for this exercise is to generate an amino acid usage report with counts only, and in no particular order. Your output should look like this: 
+T: 69645 
+G: 95475 
+V: 91683 
+Y: 36836 
+H: 29255 ….. 
+
+#!/usr/bin/python3
+
+with open("/home/jorvis/e_coli_k12_dh10b.faa") as imp:
+    from collections import defaultdict
+    counts = defaultdict(int)
+    for line in imp:
+        if line.startswith(">"):
+            continue
+        for char in line:
+            if char in {"A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y", "Z"}:
+                counts[char] += 1
+
+    total = float(sum(counts.values()))
+
+    for key,val in counts.items():
+        print("{}: {}".format(key,val))
+
+#prof
+
+def main():
+    aa = dict()
+
+    # for line in open('/home/jorvis1/e_coli_k12_dh10b.faa'):
+    for line in open('/home/jorvis/git/jhu-classes/compbio_410.634/e_coli_k12_dh10b.faa'):
+        if line.startswith('>'):
+            continue
+        else:
+            # by forcibly setting all letters to upper case we avoid any issues
+            #  with mixed case.
+            line = line.upper().rstrip()
+
+            for base in line:
+                # you don't have to do this if you use an defaultdict
+                if base in aa:
+                    aa[base] += 1
+                else:
+                    aa[base] = 1
+
+    # now print the counts (in no particular order)
+    for base in aa:
+        print("{0}: {1}".format(base, aa[base]))
+
+if __name__ == '__main__':
+    main()
+    
+#prof recommended that we should not define our char and let the char be define themselves, revised version of my code would be below
+#!/usr/bin/python3
+
+from collections import defaultdict
+counts = defaultdict(int)
+
+with open("/home/jorvis/e_coli_k12_dh10b.faa") as file:
+    for line in file:
+        if line.startswith(">"):
+            continue
+        else:
+            line = line.upper().rstrip()
+        for char in line:
+            counts[char] += 1
+
+    for type,int in counts.items():
+        print("{}: {}".format(type,in))
 
 
+#6	Modify your script from #5 to display only the top 5 most frequently used amino acids and add their percentage use. The output should be like this: L: 139002 (10.7%) A: 123885 (9.6%) G: 95475 (7.4%) V: 91683 (7.1%) I: 77836 (6.0%)
+
+#!/usr/bin/python3
+
+with open("/home/jorvis/e_coli_k12_dh10b.faa") as imp:
+    from collections import defaultdict
+    counts = defaultdict(int)
+    for line in imp:
+        if line.startswith(">"):
+            continue
+        for char in line:
+            if char in {"A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y", "Z"}:
+                counts[char] += 1
+
+    count = 0
+    total = float(sum(counts.values()))
+    for key,val in sorted(counts.items(), key=lambda kv: (kv[1]), reverse=True): 
+        print("{}: {}, ({:.1%})".format(key,val, val / total))
+        count = count + 1;
+        if count >=5:
+            break
+            
+#prof his code is a little wonky on this one actyally, percentages dont display and what is vi ban??
+vi ban
+#!/usr/bin/env python3
+
+# sorted(data, key=data.get)
+# sorted(data.items(), key=lambda x:x[1])
+
+def main():
+    aa = dict()
+    seq_length = 0
+
+    # for line in open('/home/jorvis1/e_coli_k12_dh10b.faa'):
+    for line in open('/home/jorvis/Dropbox/jhu/compbio_410.634_python/e_coli_k12_dh10b.faa'):
+        if line.startswith('>'):
+            continue
+        else:
+            # by forcibly setting all letters to upper case we avoid any issues
+            #  with mixed case.
+            line = line.upper().rstrip()
+            seq_length += len(line)
+
+            for base in line:
+                # you don't have to do this if you use an defaultdict
+                if base in aa:
+                    aa[base] += 1
+                else:
+                    aa[base] = 1
+
+    # now print the counts (in reverse order, by value)
+    for base in sorted(aa, key=aa.get, reverse=True)[0:5]:
+        perc = (aa[base] / seq_length) * 100
+        print("{0}: {1} ({2:.1f}%)".format(base, aa[base], perc))
 
 
+if __name__ == '__main__':
+    main()           
+
+#modifying my new updated code to have top5- counts.items pulls up dict of items, key=lambda defines key as I want to pick category from counts.items to sort and kv: (kv[1]) allows for the "2nd" category to be picked. If kv[0] woulod be sorted by alphabetical
+#!/usr/bin/python3
+
+from collections import defaultdict
+counts = defaultdict(int)
+
+with open("/home/jorvis/e_coli_k12_dh10b.faa") as file:
+    for line in file:
+        if line.startswith(">"):
+            continue
+        else:
+            line = line.upper().rstrip()
+        for char in line:
+            counts[char] += 1
+            
+    total =float(sum(counts.values()))
+    count = 0
+    
+    for key,val in sorted(counts.items(), key=lambda kv: (kv[1]), reverse=True)[0:5]: 
+        print("{}: {}, ({:.1%})".format(key,val, val / total))
+
+#7 Create a single module file with at least one class definition. It should have at least three attributes and two methods. At least one of the methods needs to take an argument to change how it behaves. - Create a test script which uses and shows off the features of your module. 
+
+#prof example
+
+import fasta
+
+def main():
+    entry = fasta.Entry()
+    entry.load_from_file('test_fasta.fna')
+
+    print("Sequence ID: {0}".format( entry.id ))
+    print("Length: {0} bp".format( len(entry.seq) ))
+    print("Start codon is: {0}".format( entry.start_codon() ))
+    print("The sequence is:\n{0}".format( entry.wrapped()))
 
 
+if __name__ == '__main__':
+    main()
+
+#mine 
+Last login: Sat Apr 23 19:50:23 on ttys000
+
+The default interactive shell is now zsh.
+To update your account to use zsh, please run `chsh -s /bin/zsh`.
+For more details, please visit https://support.apple.com/kb/HT208050.
+Bryants-MacBook-Pro:~ bryantnguyen$ ssh bnguye43@bfx3.aap.jhu.edu 
+Password:
+Last login: Sat Apr 23 04:33:23 2022 from 10.249.2.168
+-bash: Uncomment: command not found
+[bnguye43@bfx3 ~]$ cd week09
+[bnguye43@bfx3 week09]$ ls
+ex01.py  ex02.py  ex03.py  ex04.py  ex05.py
+[bnguye43@bfx3 week09]$ vi ex01.py 
+[bnguye43@bfx3 week09]$ vi ex02.py 
+[bnguye43@bfx3 week09]$ vi ex03.py 
+[bnguye43@bfx3 week09]$ vi ex04.py 
+[bnguye43@bfx3 week09]$ vi ex05.py 
+[bnguye43@bfx3 week09]$ chmod ex05.py 
+chmod: missing operand after ‘ex05.py’
+Try 'chmod --help' for more information.
+[bnguye43@bfx3 week09]$ python ex05.py 
+4126
+[bnguye43@bfx3 week09]$ vi prof
+[bnguye43@bfx3 week09]$ python prof 
+There were 4126 sequences within the file.
+[bnguye43@bfx3 week09]$ vi prof 
+[bnguye43@bfx3 week09]$ vi prof 
+[bnguye43@bfx3 week09]$ python prof 
+There were 4126 sequences within the file.
+[bnguye43@bfx3 week09]$ python prof 
+There were 4126 sequences within the file.
+[bnguye43@bfx3 week09]$ cd week10
+-bash: cd: week10: No such file or directory
+[bnguye43@bfx3 week09]$ cp
+cp: missing file operand
+Try 'cp --help' for more information.
+[bnguye43@bfx3 week09]$ cp home
+cp: missing destination file operand after ‘home’
+Try 'cp --help' for more information.
+[bnguye43@bfx3 week09]$ cd ~
+[bnguye43@bfx3 ~]$ cd wee10
+-bash: cd: wee10: No such file or directory
+[bnguye43@bfx3 ~]$ cd week10
+[bnguye43@bfx3 week10]$ who
+tvan5    pts/7        2022-04-23 20:02 (10.249.71.81)
+bnguye43 pts/10       2022-04-23 20:16 (10.249.2.168)
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ vi prof
+[bnguye43@bfx3 week10]$ python prof
+bnguye43 on pts/0 at 2021-11-06 16:48 (10.249.22.85)
+jshinn2 on pts/2 at 2021-11-06 16:19 (10.249.82.59)
+[bnguye43@bfx3 week10]$ python ex02.py
+bnguye43 on pts/0 at 2021-11-06 16:48 (10.249.22.85)
+
+jshinn2 on pts/2 at 2021-11-06 16:19 (10.249.82.59)
+
+[bnguye43@bfx3 week10]$ vi ex02
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+Traceback (most recent call last):
+  File "ex02.py", line 7, in <module>
+    (who, where, ip) = re.split('\s+')
+TypeError: split() takes at least 2 arguments (1 given)
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+Traceback (most recent call last):
+  File "ex02.py", line 7, in <module>
+    (who, where, ip) = re.split('\s+', line)
+ValueError: too many values to unpack
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+bnguye43 on pts/0 at 2021-11-06 16:48 (10.249.22.85)
+
+jshinn2 on pts/2 at 2021-11-06 16:19 (10.249.82.59)
+
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+Traceback (most recent call last):
+  File "ex02.py", line 7, in <module>
+    (who, where, ip) = re.split('\s+', line, 1)
+ValueError: need more than 2 values to unpack
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+Traceback (most recent call last):
+  File "ex02.py", line 7, in <module>
+    (who, where, ip) = re.split('\s+', line, 3)
+ValueError: too many values to unpack
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+Traceback (most recent call last):
+  File "ex02.py", line 7, in <module>
+    (who, where, ip) = re.split('\s+', imp, 2)
+  File "/usr/lib64/python2.7/re.py", line 167, in split
+    return _compile(pattern, flags).split(string, maxsplit)
+TypeError: expected string or buffer
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+Traceback (most recent call last):
+  File "ex02.py", line 7, in <module>
+    (who, where, ip) = re.split('\s+', 'a', 2)
+ValueError: need more than 1 value to unpack
+[bnguye43@bfx3 week10]$ vi ex02.py 
+[bnguye43@bfx3 week10]$ python ex02.py
+bnguye43 on pts/0 at 2021-11-06 16:48 (10.249.22.85)
+
+jshinn2 on pts/2 at 2021-11-06 16:19 (10.249.82.59)
+
+[bnguye43@bfx3 week10]$ python prof
+bnguye43 on pts/0 at 2021-11-06 16:48 (10.249.22.85)
+jshinn2 on pts/2 at 2021-11-06 16:19 (10.249.82.59)
+[bnguye43@bfx3 week10]$ vi ex03
+ex03.py       ex03test.txt  
+[bnguye43@bfx3 week10]$ vi ex03.py
+[bnguye43@bfx3 week10]$ vi ex03
+ex03.py       ex03test.txt  
+[bnguye43@bfx3 week10]$ vi ex03test.txt 
+[bnguye43@bfx3 week10]$ python ex03
+ex03.py       ex03test.txt  
+[bnguye43@bfx3 week10]$ python ex03.py
+three
+
+four
+
+eight
+
+[bnguye43@bfx3 week10]$ vi ex03test.txt 
+[bnguye43@bfx3 week10]$ python ex03.py
+three
+
+four
+
+AANGRY
+
+ObtOoSe
+
+eight
+
+[bnguye43@bfx3 week10]$ vi ex03.py
+[bnguye43@bfx3 week10]$ python ex03.py
+three
+
+four
+
+eight
+
+[bnguye43@bfx3 week10]$ vi prof
+[bnguye43@bfx3 week10]$ python prof
+Traceback (most recent call last):
+  File "prof", line 11, in <module>
+    main()
+  File "prof", line 4, in main
+    for line in open('ex03.data'):
+IOError: [Errno 2] No such file or directory: 'ex03.data'
+[bnguye43@bfx3 week10]$ vi prof
+[bnguye43@bfx3 week10]$ python prof
+Successful match to: ee in three
+Successful match to: ou in four
+Successful match to: AA in AANGRY
+Successful match to: Oo in ObtOoSe
+Successful match to: ei in eight
+[bnguye43@bfx3 week10]$ vi prof
+[bnguye43@bfx3 week10]$ vi ex04.py 
+[bnguye43@bfx3 week10]$ python ex04.py 
+The shy, little fox jumped over the brown, scary bear.
+[bnguye43@bfx3 week10]$ vi ex04.py 
+[bnguye43@bfx3 week10]$ python ex04.py 
+The e, little fox jumped over the y, scary bear.
+[bnguye43@bfx3 week10]$ vi ex04.py 
+[bnguye43@bfx3 week10]$ python ex04.py 
+The little, little fox jumped over the scary, scary bear.
+[bnguye43@bfx3 week10]$ vi ex04.py 
+[bnguye43@bfx3 week10]$ python ex04.py 
+The shy, little fox jumped over the brown, scary bear.
+[bnguye43@bfx3 week10]$ cd ~
+[bnguye43@bfx3 ~]$ cd week11
+[bnguye43@bfx3 week11]$ ls
+ex02.py  ex03.py
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 28, in <module>
+    main()
+  File "prof", line 7, in main
+    for line in open('/home/jorvis/git/jhu-classes/compbio_410.634/e_coli_k12_dh10b.faa'):
+IOError: [Errno 13] Permission denied: '/home/jorvis/git/jhu-classes/compbio_410.634/e_coli_k12_dh10b.faa'
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 10, in <module>
+    if char in {count}:
+NameError: name 'count' is not defined
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 10, in <module>
+    if char in {counts}:
+TypeError: unhashable type: 'collections.defaultdict'
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 10, in <module>
+    if char in {counts}:
+TypeError: unhashable type: 'collections.defaultdict'
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 10, in <module>
+    count[char] += 1
+NameError: name 'count' is not defined
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+
+: 20564
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+
+: 20564
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+
+: 20564
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ python ex02.py 
+
+: 20564
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 14, in <module>
+    for key,val in count.items():
+NameError: name 'count' is not defined
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 15, in <module>
+    print("{}: {}".format(key,val))
+NameError: name 'key' is not defined
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 15, in <module>
+    print("{}: {}".format(key,val))
+NameError: name 'key' is not defined
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+  File "ex02.py", line 14
+    for 0,1 in counts.items():
+SyntaxError: can't assign to literal
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+123885: A
+14983: C
+74992: E
+66618: D
+95475: G
+50554: F
+77836: I
+29255: H
+57151: K
+36759: M
+139002: L
+50492: N
+57732: Q
+57595: P
+74803: S
+71819: R
+3: U
+69645: T
+20019: W
+91683: V
+36836: Y
+1: X
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 2, in <module>
+    import defaultdict 
+ImportError: No module named defaultdict
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 12, in <module>
+    counts[char] += 1
+KeyError: 'M'
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 5, in <module>
+    counts = defaultdict(char)
+NameError: name 'char' is not defined
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 12, in <module>
+    counts[char] += 1
+TypeError: type() takes 1 or 3 arguments
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+Traceback (most recent call last):
+  File "ex02.py", line 3, in <module>
+    counts = deafaultdict(int)
+NameError: name 'deafaultdict' is not defined
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ python ex02.py 
+A: 123885
+C: 14983
+E: 74992
+D: 66618
+G: 95475
+F: 50554
+I: 77836
+H: 29255
+K: 57151
+M: 36759
+L: 139002
+N: 50492
+Q: 57732
+P: 57595
+S: 74803
+R: 71819
+U: 3
+T: 69645
+W: 20019
+V: 91683
+Y: 36836
+X: 1
+[bnguye43@bfx3 week11]$ vi ex02.py 
+[bnguye43@bfx3 week11]$ vi ex03.py 
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 1
+    vi ban
+         ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 34, in <module>
+    main()
+  File "prof", line 11, in main
+    for line in open('/home/jorvis/Dropbox/jhu/compbio_410.634_python/e_coli_k12_dh10b.faa'):
+IOError: [Errno 2] No such file or directory: '/home/jorvis/Dropbox/jhu/compbio_410.634_python/e_coli_k12_dh10b.faa'
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002 (0.0%)
+A: 123885 (0.0%)
+G: 95475 (0.0%)
+V: 91683 (0.0%)
+I: 77836 (0.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 1
+    vi ban
+         ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002 (0.0%)
+A: 123885 (0.0%)
+G: 95475 (0.0%)
+V: 91683 (0.0%)
+I: 77836 (0.0%)
+[bnguye43@bfx3 week11]$ python ex03.py 
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 34, in <module>
+    main()
+  File "prof", line 30, in main
+    print("{0}: {1} ({:.1f}%)".format(base, aa[base], perc))
+ValueError: cannot switch from manual field specification to automatic field numbering
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002 (0.0%)
+A: 123885 (0.0%)
+G: 95475 (0.0%)
+V: 91683 (0.0%)
+I: 77836 (0.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002 (0.0%)
+A: 123885 (0.0%)
+G: 95475 (0.0%)
+V: 91683 (0.0%)
+I: 77836 (0.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 16, in <module>
+    print("{}: {}, ({:.1%})".format(key,val, val / total))
+NameError: name 'total' is not defined
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+Traceback (most recent call last):
+  File "prof", line 17, in <module>
+    if count >=5:
+NameError: name 'count' is not defined
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+Traceback (most recent call last):
+  File "prof", line 17, in <module>
+    count = count + 1;
+NameError: name 'count' is not defined
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (0.0%)
+A: 123885, (0.0%)
+G: 95475, (0.0%)
+V: 91683, (0.0%)
+I: 77836, (0.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ vi prof2
+[bnguye43@bfx3 week11]$ python prof2
+L: 139002 (10.7%)
+A: 123885 (9.6%)
+G: 95475 (7.4%)
+V: 91683 (7.1%)
+I: 77836 (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ vi prof2
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Y: 36836, (0.0%)
+X: 1, (0.0%)
+W: 20019, (0.0%)
+V: 91683, (0.0%)
+U: 3, (0.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 16
+    for key,val in sorted(counts.items(), key=lambda k: (k[1]) reverse=True): 
+                                                                     ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 16
+    for key,val in sorted(counts.items(), key=lambda kv: (kv[1]) reverse=True): 
+                                                                       ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (0.0%)
+A: 123885, (0.0%)
+G: 95475, (0.0%)
+V: 91683, (0.0%)
+I: 77836, (0.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 15
+    for key,val in sorted(counts.items(), key=lambda k: (k[1]), reverse=True)[):5]: 
+                                                                              ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 15, in <module>
+    for key,val in sorted(key, key=key.get, reverse=True)[0:5]: 
+NameError: name 'key' is not defined
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 15
+    for key,val in sorted(counts,counts=key.get reverse=True)[0:5]: 
+                                                      ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 15, in <module>
+    for key,val in sorted(counts,counts=key.get, reverse=True)[0:5]: 
+NameError: name 'key' is not defined
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 15, in <module>
+    for key,val in sorted(counts,counts=char.get, reverse=True)[0:5]: 
+AttributeError: 'str' object has no attribute 'get'
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 15, in <module>
+    for key,val in sorted(counts,key=char.get, reverse=True)[0:5]: 
+AttributeError: 'str' object has no attribute 'get'
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 15
+    for key,val in sorted(counts.items(),key=char kv: (kv[1]), reverse=True)[0:5]: 
+                                                   ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Y: 36836, (2.8%)
+X: 1, (0.0%)
+W: 20019, (1.5%)
+V: 91683, (7.1%)
+U: 3, (0.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 15, in <module>
+    for key,val in sorted(counts.items(),key=lambda kv: (kv[2]), reverse=True)[0:5]: 
+  File "prof", line 15, in <lambda>
+    for key,val in sorted(counts.items(),key=lambda kv: (kv[2]), reverse=True)[0:5]: 
+IndexError: tuple index out of range
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+Traceback (most recent call last):
+  File "prof", line 15, in <module>
+    for key,val in sorted(counts.items(),key=lambda kv: (kv[1]), reverse=false)[0:5]: 
+NameError: name 'false' is not defined
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+  File "prof", line 15
+    for key,val in sorted(counts.items(),key=lambda kv: (kv[1])[0:5]: 
+                                                                    ^
+SyntaxError: invalid syntax
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+X: 1, (0.0%)
+U: 3, (0.0%)
+C: 14983, (1.2%)
+W: 20019, (1.5%)
+H: 29255, (2.3%)
+[bnguye43@bfx3 week11]$ vi prof
+[bnguye43@bfx3 week11]$ python prof
+L: 139002, (10.7%)
+A: 123885, (9.6%)
+G: 95475, (7.4%)
+V: 91683, (7.1%)
+I: 77836, (6.0%)
+[bnguye43@bfx3 week11]$ cd ~
+[bnguye43@bfx3 ~]$ cd week12
+[bnguye43@bfx3 week12]$ ls
+ex01.py  __pycache__  test_ex01.py  test_patient.txt
+[bnguye43@bfx3 week12]$ vi ex01.py 
+
+#!/usr/bin/env python3
+
+import re
+
+class Patient:
+    def __init__(self, name=None, dob=None, seq=None):
+        self.name = name
+        self.dob = dob
+        self.seq = seq
 
 
+    def load_from_file(self, file_path):
+        seqs_found = 0
+
+        for line in open(file_path):
+            line = line.rstrip()
+
+            if line.startswith('>'):
+                if seqs_found == 0:
+                    m = re.match(">(\S+)\s*DOB(.*)", line)
+                    if m:
+                        self.name = m.group(1)
+                        self.dob = m.group(2)
+                else:
+                    raise Exception("Error, expected one patient.")
+            else:
+                if self.seq is None:
+                    self.seq = line
+                else:
+                    self.seq += line
+
+    def nft(self):
+        output = []
+        for character in self.seq:
+            number = ord(character) - 65
+            output.append(number)
+        return output                        
 
 
 
