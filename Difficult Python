@@ -1,0 +1,335 @@
+#1 Write a function for temperature conversion named ‘convert_temp’. It should be able to handle both Fahrenheit to Celsius conversions as well as Celsius to Fahrenheit conversions. It must accept and read two arguments that are passed to it: first, the temperature scale of the original temperature (only ‘F’ or ‘C’ should be used), and second, the number of degrees of the original temperature. It should then convert the original temperature from Fahrenheit to Celsius or from Celsius to Fahrenheit, as appropriate. Finally, this function should print out the original temperature and scale as well as the converted temperature and scale. The function signature should be: 
+
+def convert_temp( scale=None, source_temp=None ):
+
+Then write a short program to use the function you wrote (both the function and program should be part of the same file). Your program should prompt the user to enter a temperature scale (assume the user will choose to type ‘F’ or ‘C’) and then prompt the user to enter a number of degrees. Using the values supplied by the user, the program should then call the ‘convert_temp’ function and pass in the two arguments, along these lines: 
+
+convert_temp(scale=F, source_temp=98.6) 
+
+and the subroutine should produce a line of output that looks like this (for Fahrenheit to Celsius): 
+
+98.6 degrees F is 37.0 degrees C 
+
+or, for a Celsius to Fahrenheit conversion: 
+
+100.0 degrees C is 212.0 degrees F 
+
+The first temperature and scale that you should report are those that the user entered, followed by the converted temperature and other scale. 
+
+#minor deduction for not having error message if F/C was entered incorrectly
+
+def convert_temp( scale=None, source_temp=None ):
+    if scale == 'F':
+        degrees_c = (source_temp - 32) * (5/9)
+        print('%.1f degrees %s is %.1f degrees C' % (source_temp, scale, degrees_c))
+
+    if scale == 'C':
+        degrees_f = (source_temp * (9/5)) + 32
+        print('%.1f degrees %s is %.1f degrees F' % (source_temp, scale, degrees_f))
+
+scale = input('Enter the temperature scale (F/C): ')
+
+source_temp = float(input('Enter the temperature: '))
+
+convert_temp(scale, source_temp) 
+
+#fixed to have correct error messages
+while True:
+    scale = input('Enter the temperature scale (F/C): ')
+    if scale not in ["F", "C"]:
+        print('Please enter valid scale (F or C)')
+        continue
+    else:
+        break
+
+
+while True:
+    try:
+        source_temp = float(input('Enter the temperature:'))
+    except ValueError:
+        print('Error please enter valid number')
+        continue
+    else:
+        break
+    
+def convert_temp( scale=None, source_temp=None ):
+    if scale == 'F':
+        degrees_c = (source_temp - 32) * (5/9)
+        print('%.1f degrees %s is %.1f degrees C' % (source_temp, scale, degrees_c))
+
+    if scale == 'C':
+        degrees_f = (source_temp * (9/5)) + 32
+        print('%.1f degrees %s is %.1f degrees F' % (source_temp, scale, degrees_f))
+
+convert_temp(scale, source_temp) 
+
+
+#4 Write a program that prompts the user to enter an oligonucleotide sequence, such as TATGAGCCCGTA. If the user entered a valid oligo sequence consisting only of the characters A, C, G, or T, the program should then display the reverse complement of that sequence, in this case TACGGGCTCATA, along with text indicating that it is the reverse complement. 
+
+After displaying the reverse complement, the program should then prompt the user to enter another sequence. The program should continue this pattern of prompting the user for a new oligo sequence and displaying its reverse complement until the user enters a sequence with at least one character that is invalid (i.e. a character other than A, C, G, or T). At this point, the program should end its run with a message that mentions that an invalid character was found, with no further prompting to the user. 
+
+def reverse_complement (DNA):
+    rev = ""
+    comp = {'A':'T', 'C':'G', 'G':'C', 'T':'A'}
+    for ch in DNA[::-1]:
+        rev+= comp[ch]
+    return rev
+
+while(True):
+    sequence = input("Enter oligonucleotide sequence: ")
+    c=0
+    seq=len(sequence)
+
+    for i in range(seq):
+        if (sequence[i]=="A" or sequence[i] == "C"):
+            c=0
+        elif (sequence[i]=="T" or sequence[i]=="G"):
+            c=0
+        else:
+            c=1
+            break
+
+    if(c==1):
+        print("invalid character was found")
+        break
+
+    print("Complement of sequence: ",reverse_complement(sequence))
+
+
+#5 The GFF3 format is a commonly-used one in bioinformatics for representing sequence annotation. You can find the specification here: 
+
+http://www.sequenceontology.org/gff3.shtml 
+
+/home/jorvis1/Saccharomyces_cerevisiae_S288C.annotation.gff 
+
+Note that this same file has both the annotation feature table and the FASTA sequence for the molecules referenced. (See the '##FASTA' directive in the specification.) 
+
+Within the feature table another column of note is the 9th, where we can store any key=value pairs relevant to that row's feature such as ID, Ontology_term or Note. 
+
+Your task is to write a GFF3 feature exporter. A user should be able to run your script like this: 
+
+$ export_gff3_feature.py --source_gff=/path/to/some.gff3 --type=gene --attribute=ID --value=YAR003W 
+
+There are 4 arguments here that correspond to values in the GFF3 columns. In this case, your script should read the path to a GFF3 file, find any gene (column 3) which has an ID=YAR003W (column 9). When it finds this, it should use the coordinates for that feature (columns 4, 5 and 7) and the FASTA sequence at the end of the document to return its FASTA sequence. 
+
+Your script should work regardless of the parameter values passed, warning the user if no features were found that matched their query. (It should also check and warn if more than one feature matches the query.) 
+
+The output should just be printed on STDOUT (no writing to a file is necessary.) It should have a header which matches their query, like this: 
+
+>gene:ID:YAR003W 
+…. sequence here … 
+
+Some bonus points will be awarded if you format the sequence portion of the FASTA output as 60-characters per line, which follows the standard. 
+
+#!/usr/bin/env python3
+
+import argparse
+import re
+
+def main():
+
+    parser = argparse.ArgumentParser( description='GFF3 feature exporter' )
+    parser.add_argument('-s', '--source_gff', type=str, required=True, help='File path of an input file to be read')
+    parser.add_argument('-t', '--type', type=str, required=True, help='GFF3 feature type')
+    parser.add_argument('-a', '--attribute', type=str, required=True, help='Attribute of feature type')
+    parser.add_argument('-v', '--value', type=str, required=True, help='Known value of attribute')
+
+    args = parser.parse_args()
+
+    with open(args.source_gff) as gff_file:
+
+        infasta = False
+        lnum = 0
+        seqdict = {}
+        feature = []
+        foundmol = False
+
+        for line in gff_file:
+            line = line.rstrip()
+            lnum += 1
+
+            if infasta is True:
+                m = re.search('>(\S+)\s*', line)
+                if m:
+                    mol = m.group(1)
+                    if any(mol.strip() in i for i in feature):
+                        foundmol = True
+                        seqdict[mol] = ''
+                    else:
+                        foundmol = False
+                else:
+                    if foundmol:
+                        seqdict[mol] += line
+
+            elif line.startswith("##FASTA"):
+                infasta = True
+
+            elif line.startswith('#'):
+                continue
+
+            else:
+                cols = line.split("\t")
+                if len(cols) == 9:
+                    ftype = cols[2]
+                    if ftype == args.type:
+                        mol = cols[0]
+                        start = int(cols[3])
+                        end = int(cols[4])
+                        strand = cols[6]
+                        atts = cols[8]
+                        for att in atts.split(';'):
+                            att = att.strip()
+                            if att != '':
+                                m, n = att.split('=')
+                                if m == args.attribute and n == args.value:
+                                    feature.append([mol, ftype, m, n, start, end, strand])
+                else:
+                    raise TypeError("Not GFF3 format.")
+
+    if feature:
+
+        if len(feature) > 1:
+            print("More than 1 feature found. Printing first result only.")
+
+        fmolid = feature[0][0]
+        ftype = feature[0][1]
+        fattr = feature[0][2]
+        fvalue = feature[0][3]
+        fstart = feature[0][4]
+        fend = feature[0][5]
+
+        print(">{0}:{1}:{2}".format(ftype, fattr, fvalue))
+
+        seq = seqdict[fmolid][fstart - 1:fend]
+        for i in range(0, len(seq), 60):
+            print(seq[i:i + 60])
+    else:
+        print("No such feature exists")
+
+if __name__ == '__main__':
+    main()
+
+
+#6 Write a program that will open a BLASTN (nucleotide to nucleotide search) output file, parse out specific information, and produce formatted output that will be written to STDOUT (i.e. Standard Output; the terminal window / command line). Before writing your program, copy the BLASTP output file, /home/jorvis1/example_blast.txt to your home directory. Look through the file and explore the format. 
+
+Your program should start by opening the input file (you may hardcode the filename in this case), parsing and storing both the query sequence ID (from near the top of the file; look for the string following “Query=“) and the query length (found on the line below the query sequence), and displaying them both to STDOUT. Add some additional characters and formatting to your output such that these two fields appear exactly like this in STDOUT: 
+
+Query ID: IREALLYLIKEPYTHON 
+
+Query Length: 15 
+
+Then, it is time to parse information about the significant alignments for this query. Each alignment begins with the “>” symbol. For just the first ten hits, parse out only the accession (located between the first set of pipe symbols, | | ), length and score. For each of these hits, these three fields should then be written to STDOUT in exactly this format including capitalization, spacing, and punctuation (as shown here using the real values for the first hit; study the file to understand exactly where these values came from): 
+
+Alignment #1: Accession = ref|XM_005094338.1| (Length = 2377, Score = 1098)
+
+
+You must use regular expressions to pull out precisely the parts of the file that you want, which is the definition of parsing. Hint: you will very likely need to use parentheses to put some parts of those expressions into temporary memory (m.group(1), etc.) for later use. 
+
+Do not have your regular expression search for hardcoded values; your program should be able to read another BLASTN output file and run successfully, not just this specific one. 
+
+Pay careful attention to the exact appearance of the sample output, above. Although it is a good start to be able to, at a minimum, report the requested values, your program must also strive to match the formats specified. 
+
+import re
+
+file = open("example_blast.txt",'r')
+blastn = file.read()
+pattern = 'Query=\s(.*)'
+p = re.search(pattern, blastn)
+print("Query ID:", p.group(1) if p is not None else 'Not found')
+
+patt = 'Length=(.*)'
+d = re.search(patt, blastn)
+print("Query Length:", d.group(1) if d is not None else 'Not found')
+
+lst = re.findall(r'^>*',blastn)
+lst = blastn.split('>', 10)
+refl = []
+lengl =[]
+scorel = []
+del lst[0]
+for i,seq in enumerate(lst):
+    try:
+        ref = re.search(r'\|(.+?)\|',seq).group(0)
+        refl.append(ref)
+        leng = re.search(r'Length=(.+\d)',seq).group(0)
+        lengstr = lengnum = re.findall(r'\d+',leng)
+        lengnum =int(lengstr[0])
+        lengl.append(lengnum)
+        score = re.search(r'Score = (.+\d)',seq).group(0)
+        scorestr = re.findall(r'\d+',score)
+        scorenum =int(scorestr[0])
+        scorel.append(scorenum)
+    except:
+         pass
+    print("Alignment #{}: Accession = ref{}(Length = {}, Score = {})".format(i+1,ref,lengnum,scorenum))
+
+file.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
