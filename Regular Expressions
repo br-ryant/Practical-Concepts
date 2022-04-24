@@ -19,8 +19,13 @@ r"b+c*"
 r"\\+\**"
 
 #3 three consecutive copies of whatever text is contained in the whatever variable 
+whatever = 'happy'
+    matches = re.finditer( r"(" + re.escape(whatever) + r")", test_string)
+    for match in matches:
+        print("1c. Successful match to: {0}".format(match.group(1)) )
 
 #4 any five characters (they don't have to be the same, and this includes newline as a valid character option) (re.S or re.DOTALL makes "." include newlines as a valid character option.  
 r".{5}," re.S
 
 #5 [Challenging!] the same word written two or more times in a row (with possible varying intervening whitespace), where "word" is defined as a non-empty sequence of non-whitespace characters. No points off if you don't get this one, I'm just looking to be impressed. 
+r"\b(\w+)(?=\s+\1\b)
