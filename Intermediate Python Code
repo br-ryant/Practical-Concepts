@@ -248,6 +248,66 @@ with open("/home/jorvis/e_coli_k12_dh10b.faa") as file:
 
 #prof example
 
+#!/usr/bin/env python3 (FILE 1)
+
+import re
+
+class Entry:
+    """
+    Simple class to represent a single FASTA entry.  For this demo it's assumed the
+    entry type is a nucleotide sequence.
+    """
+    def __init__(self, id=None, title=None, seq=None):
+        self.id = id
+        self.title = title
+        self.seq = seq
+
+
+    def load_from_file(self, file_path):
+        """
+        This is a demo only which expects an input FASTA file with only a single
+        entry within it.  Will test for more and error if it files more than one.
+        """
+        seqs_found = 0
+
+        for line in open(file_path):
+            line = line.rstrip()
+            
+            if line.startswith('>'):
+                if seqs_found == 0:
+                    m = re.match(">(\S+)\s*(.*)", line)
+                    if m:
+                        self.id = m.group(1)
+                        self.title = m.group(2)
+                else:
+                    raise Exception("Error, expected a single-entry FASTA file but found more.")
+            else:
+                if self.seq is None:
+                    self.seq = line
+                else:
+                    self.seq += line
+
+
+    def start_codon(self):
+        """
+        Returns the first three bases of the FASTA sequence
+        """
+        return self.seq[0:3]
+
+
+    def wrapped(self, every=60):
+        """
+        Pass a string of residues (nucleotide or polypeptides) that has NO whitespace and
+        this will return another string with new line characters inserted every N residues.
+        N is specified with the 'every' parameter with a default of 60.  For example:
+        new_fasta = wrapped_fasta(some_string, every=60)
+
+        This runs orders of magnitude faster than using the textwrap module.
+        """
+        return '\n'.join(self.seq[i:i+every] for i in range(0, len(self.seq), every))
+        
+#FILE 2
+
 import fasta
 
 def main():
@@ -303,6 +363,22 @@ class Patient:
             output.append(number)
         return output
 
+#second file
+#!/usr/bin/env python3
+
+import ex01
+
+def main():
+    entry = ex01.Patient()
+    entry.load_from_file('test_patient.txt')
+
+    print("Name: {0}".format( entry.name ))
+    print("DOB: {0}".format( entry.dob ))
+    print("Seq: {0}".format( entry.seq ))
+    print("Integer: {0}".format( entry.nft() ))
+
+if __name__ == '__main__':
+    main()
 
 
 
